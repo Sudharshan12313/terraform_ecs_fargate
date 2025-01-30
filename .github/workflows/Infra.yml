@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Environment to deploy (e.g., dev, staging, prod)"
+        description: "Environment to deploy (dev, staging, prod)"
         required: true
         default: "dev"
         type: choice
@@ -13,12 +13,12 @@ on:
         - staging
         - prod
 
-  # push:
-  #   branches:
-  #     - main
-  # pull_request:
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
       
 permissions:
   contents: read
@@ -168,12 +168,12 @@ jobs:
     
 
       # # Step: Apply Terraform if PR is merged
-      # - name: Apply Terraform on Merge the PR
-      #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      #   run: |
-      #     cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
-      #     terraform init
-      #     terraform apply -auto-approve -var-file="${{ github.event.inputs.environment || 'dev' }}-var.tfvars"
+      - name: Apply Terraform on Merge the PR
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
+          terraform init
+          terraform apply -auto-approve -var-file="${{ github.event.inputs.environment || 'dev' }}-var.tfvars"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
