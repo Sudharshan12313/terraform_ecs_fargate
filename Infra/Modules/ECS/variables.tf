@@ -8,7 +8,7 @@ variable "task_name" {
   type        = string
 }
 
-variable "container_name" {
+variable "appointment_container_name" {
   description = "The name of the container"
   type        = string
 }
@@ -40,11 +40,6 @@ variable "task_memory" {
   default     = 512
 }
 
-variable "service_name" {
-  description = "The name of the ECS service"
-  type        = string
-}
-
 variable "cluster_id" {
   description = "The ID of the ECS cluster"
   type        = string
@@ -70,4 +65,30 @@ variable "task_definition" {
   description = "The ARN of the ECS task definition"
   type        = string
 }
+
+variable "patient_container_name" {
+  description = "The name of the container"
+  type        = string
+}
+
+variable "patient_service_name" {
+  description = "The name of the ECS service"
+  type        = string
+}
+
+variable "appointment_service_name" {
+  description = "The name of the ECS service"
+  type        = string
+}
+
+variable "appointment_tg_arn" {
+  description = "Target Group ARN for Appointment Service"
+  type        = string
+}
+
+variable "patient_tg_arn" {
+  description = "Target Group ARN for Patient Service"
+  type        = string
+}
+
 

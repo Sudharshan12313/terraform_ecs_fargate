@@ -70,11 +70,30 @@ variable "task_cpu" {
   default     = 256
 }
 
-variable "service_name" {
-  description = "ECS Service Name"
+variable "patient_container_name" {
+  description = "The name of the container"
   type        = string
-  default     = "my-ecs-service"
+  default   = "patient-container"
 }
+
+variable "patient_service_name" {
+  description = "The name of the ECS service"
+  type        = string
+  default   = "patient-service"
+}
+
+variable "appointment_service_name" {
+  description = "The name of the ECS service"
+  type        = string
+  default   = "appointment-service"
+}
+
+variable "appointment_container_name" {
+  description = "The name of the container"
+  type        = string
+  default   = "appointment-container"
+}
+
 
 variable "log_group_name" {
   description = "CloudWatch Log Group Name"
