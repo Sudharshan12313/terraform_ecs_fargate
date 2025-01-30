@@ -167,13 +167,13 @@ jobs:
           path: "Infra/Environments/${{ github.event.inputs.environment || 'dev' }}/README.md"
     
 
-      # # Step: Apply Terraform if PR is merged
-      # - name: Apply Terraform on Merge the PR
-      #   if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      #   run: |
-      #     cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
-      #     terraform init
-      #     terraform apply -auto-approve -var-file="${{ github.event.inputs.environment || 'dev' }}-var.tfvars"
+      # Step: Apply Terraform if PR is merged
+      - name: Apply Terraform on Merge the PR
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          cd Infra/Environments/${{ github.event.inputs.environment || 'dev' }}
+          terraform init
+          terraform apply -auto-approve -var-file="${{ github.event.inputs.environment || 'dev' }}-var.tfvars"
       #   env:
       #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
