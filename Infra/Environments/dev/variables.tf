@@ -1,9 +1,3 @@
-variable "aws_region" {
-  description = "AWS region"
-  type        = string
-  default     = "us-west-2"
-}
-
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   type        = string
@@ -44,12 +38,6 @@ variable "task_name" {
   description = "ECS Task Name"
   type        = string
   default     = "my-task"
-}
-
-variable "container_name" {
-  description = "Container Name"
-  type        = string
-  default     = "my-container"
 }
 
 variable "image_url" {
@@ -100,12 +88,6 @@ variable "log_group_name" {
   type        = string
   default     = "ecs-application-logs"
 }
-
-variable "security_groups" {
-  description = "SG Groups"
-  type        = list(string)
-}
-
 
 variable "image_url_patient" {
   description = "Container Image URL"
