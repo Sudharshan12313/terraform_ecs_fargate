@@ -94,3 +94,8 @@ variable "image_url_patient" {
   type        = string
   default     = "123456789012.dkr.ecr.us-east-1.amazonaws.com/my-app-repo:latest"
 }
+
+variable "domain_name" {
+  description = "The domain name for the ACM certificate"
+  type        = string
+}

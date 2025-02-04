@@ -1,67 +1,148 @@
 resource "aws_ecs_cluster" "main" {
   name = var.cluster_name
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
+
+resource "aws_cloudwatch_log_group" "ecs_logs" {
+  name              = "/ecs/${var.cluster_name}"
+  retention_in_days = 30  # Adjust as needed
+}
+
 
 resource "aws_ecs_task_definition" "appointment_service" {
   family                   = var.task_name
-  container_definitions    = jsonencode([{
-    name       = var.appointment_container_name
-    image      = var.image_url
-    memory     = var.task_memory
-    cpu        = var.task_cpu  # Make sure this is an integer
-    essential  = true
-    portMappings = [
-      {
-        containerPort = 3001
-        hostPort      = 3001
-        protocol      = "tcp"
-      }
-    ]
-  }])
-
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   execution_role_arn       = var.execution_role
-
-  # Task-level CPU and Memory
   cpu                      = var.task_cpu
   memory                   = var.task_memory
 
-  tags = {
-    Name = var.task_name
+  container_definitions    = jsonencode([
+    {
+      name  = var.appointment_container_name
+      image = var.image_url
+      memory = 512
+      cpu    = 256
+      essential = true
+      portMappings = [
+        {
+          containerPort = 3001
+          hostPort      = 3001
+          protocol      = "tcp"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_logs.name
+          awslogs-region        = "us-west-2"
+          awslogs-stream-prefix = "appointment-service"
+        }
+      }
+    },
+    {
+      name  = "xray-daemon"
+      image = "amazon/aws-xray-daemon"
+      essential = true
+      cpu    = 50
+      memory = 128
+      environment = [
+  {
+    name  = "AWS_XRAY_TRACING_NAME"
+    value = "appointment-service-trace"
+  },
+  {
+    name  = "AWS_XRAY_DAEMON_ADDRESS"
+    value = "xray.us-west-2.amazonaws.com:2000"
+  },
+  {
+    name  = "AWS_XRAY_DAEMON_DISABLE_METADATA"
+    value = "true"
   }
+]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_logs.name
+          awslogs-region        = "us-west-2"
+          awslogs-stream-prefix = "xray"
+        }
+      }
+    }
+  ])
 }
+
 
 
 resource "aws_ecs_task_definition" "patient_service" {
   family                   = var.task_name
-  container_definitions    = jsonencode([{
-    name       = var.patient_container_name
-    image      = var.image_url_patient
-    memory     = var.task_memory
-    cpu        = var.task_cpu  # Make sure this is an integer
-    essential  = true
-    portMappings = [
-      {
-        containerPort = 3000
-        hostPort      = 3000
-        protocol      = "tcp"
-      }
-    ]
-  }])
-
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   execution_role_arn       = var.execution_role
-
-  # Task-level CPU and Memory
   cpu                      = var.task_cpu
   memory                   = var.task_memory
 
-  tags = {
-    Name = var.task_name
+  container_definitions    = jsonencode([
+    {
+      name  = var.patient_container_name
+      image = var.image_url_patient
+      memory = 512
+      cpu    = 256
+      essential = true
+      portMappings = [
+        {
+          containerPort = 3000
+          hostPort      = 3000
+          protocol      = "tcp"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_logs.name
+          awslogs-region        = "us-west-2"
+          awslogs-stream-prefix = "patient-service"
+        }
+      }
+    },
+    {
+      name  = "xray-daemon"
+      image = "amazon/aws-xray-daemon"
+      essential = true
+      cpu    = 50
+      memory = 128
+      environment = [
+  {
+    name  = "AWS_XRAY_TRACING_NAME"
+    value = "appointment-service-trace"
+  },
+  {
+    name  = "AWS_XRAY_DAEMON_ADDRESS"
+    value = "xray.us-west-2.amazonaws.com:2000"
+  },
+  {
+    name  = "AWS_XRAY_DAEMON_DISABLE_METADATA"
+    value = "true"
   }
+]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_logs.name
+          awslogs-region        = "us-west-2"
+          awslogs-stream-prefix = "xray"
+        }
+      }
+    }
+  ])
 }
+
 
 
 # ECS Service for Appointment Service

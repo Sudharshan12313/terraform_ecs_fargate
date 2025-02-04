@@ -3,3 +3,9 @@ variable "ecs_task_role_name" {
   type        = string
   default     = "ecsTaskExecutionRole"
 }
+
+variable "execution_role" {
+  description = "IAM Role ARN for ECS Execution"
+  type        = string
+  default     = "ecslogsrole"
+}
